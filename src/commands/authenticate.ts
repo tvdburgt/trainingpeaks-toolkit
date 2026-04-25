@@ -19,9 +19,9 @@ Usage:
   tp authenticate --username USER  override the cached username
   tp authenticate --verbose
 
-Reads TP_USERNAME from .env (or --username flag) and TP_PASSWORD from the
-environment if set; otherwise prompts. Writes a fresh TP_COOKIE back to .env.
-Run from inside the workspace (cwd must contain .env).
+Reads TP_USERNAME from .env (or --username flag) and prompts for the
+password. Writes a fresh TP_COOKIE back to .env. Run from inside the
+workspace (cwd must contain .env).
 `);
 }
 
@@ -69,16 +69,13 @@ export async function run(argv: string[]): Promise<void> {
     log.info(`Using username: ${username}`);
   }
 
-  const envPassword = (process.env.TP_PASSWORD ?? "").trim();
-
   let cookie = "";
   let attempt = 0;
   while (attempt < MAX_LOGIN_ATTEMPTS) {
     attempt++;
-    const password = envPassword || (await askSecret("Password"));
+    const password = await askSecret("Password");
     if (!password) {
       console.error("  Empty password. Try again.\n");
-      if (envPassword) process.exit(64);
       continue;
     }
 
@@ -99,13 +96,11 @@ export async function run(argv: string[]): Promise<void> {
     } catch (err) {
       if (err instanceof LoginError || err instanceof AuthError) {
         const remaining = MAX_LOGIN_ATTEMPTS - attempt;
-        if (remaining > 0 && !envPassword) {
+        if (remaining > 0) {
           console.error(`  ${err.message} ${remaining} attempt(s) remaining.\n`);
           continue;
         }
-        console.error(
-          `\nLogin failed${envPassword ? "" : ` after ${MAX_LOGIN_ATTEMPTS} attempts`}: ${err.message}\n`,
-        );
+        console.error(`\nLogin failed after ${MAX_LOGIN_ATTEMPTS} attempts: ${err.message}\n`);
         process.exit(2);
       }
       throw err;

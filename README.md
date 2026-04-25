@@ -51,40 +51,17 @@ Subsequent `tp pull` / `tp authenticate` invocations must be run from inside the
 - `TP_USERNAME` (cached)
 - `TP_COOKIE` (the session cookie minted by login)
 
-…to `.env` in the workspace directory. The password is **not** persisted.
+…to `.env` in the workspace directory. The password is **never** persisted to disk and is not read from the environment.
 
-### Cookie expiry & auto-refresh
+### Cookie expiry
 
-Sessions expire after a few weeks. The toolkit handles this automatically when:
-
-1. `TP_USERNAME` is in `.env` (set by `tp init`), AND
-2. `TP_PASSWORD` is exported in the environment when `tp pull` runs.
-
-When the token endpoint rejects the cookie, the toolkit logs in fresh, writes the new `TP_COOKIE` back to `.env`, and continues. You'll see:
-
-```
-INFO Cookie expired, refreshing…
-INFO Refreshed.
-```
-
-If `TP_PASSWORD` is not available, `tp pull` will fail with an auth error — recover with:
+Sessions expire after a few weeks. When the cookie is rejected, `tp pull` exits with an auth error. Recover with:
 
 ```
 tp authenticate
 ```
 
-…which prompts for the password (or reads `TP_PASSWORD` if set), logs in, and rewrites `TP_COOKIE`.
-
-### Non-interactive use (cron / CI)
-
-Both `tp init` and `tp authenticate` accept `--username USER`, and read `TP_USERNAME` / `TP_PASSWORD` from the environment when present. Example unattended pull:
-
-```bash
-export TP_PASSWORD='...'
-tp pull
-```
-
-Password should never be passed as a CLI flag (would leak into shell history / `ps`).
+…which prompts for your password, logs in, and rewrites `TP_COOKIE`. There is no background auto-refresh: re-authentication is always interactive, by design.
 
 ### Security
 

@@ -11,8 +11,6 @@ export interface EnvConfig {
   cookie: string;
   /** Optional cached username for re-authentication. */
   username: string | undefined;
-  /** Optional password (env-only by default; not persisted to disk by `tp init`). */
-  password: string | undefined;
   athleteIdOverride: number | undefined;
   outDir: string;
   projectRoot: string;
@@ -38,12 +36,10 @@ export function loadEnvFromProcess(): EnvConfig {
   }
 
   const username = (process.env.TP_USERNAME ?? "").trim() || undefined;
-  const password = (process.env.TP_PASSWORD ?? "").trim() || undefined;
 
   return buildEnvConfig({
     cookie,
     username,
-    password,
     projectRoot: process.cwd(),
     athleteIdOverride,
   });
@@ -64,7 +60,6 @@ export function buildEnvConfig(params: {
   cookie: string;
   projectRoot: string;
   username?: string | undefined;
-  password?: string | undefined;
   athleteIdOverride?: number | undefined;
 }): EnvConfig {
   if (!params.cookie || params.cookie.trim() === "") {
@@ -73,7 +68,6 @@ export function buildEnvConfig(params: {
   return {
     cookie: params.cookie.trim(),
     username: params.username?.trim() || undefined,
-    password: params.password?.trim() || undefined,
     athleteIdOverride: params.athleteIdOverride,
     // outDir is the workspace root itself — generated files live alongside .env
     // so the directory IS the workspace (no nested out/ layer).

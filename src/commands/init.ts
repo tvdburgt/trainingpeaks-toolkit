@@ -34,9 +34,9 @@ Usage:
 
 Steps performed:
   1. Resolve target workspace directory (created if missing).
-  2. Prompt for TrainingPeaks username + password (or read from
-     TP_USERNAME / TP_PASSWORD env vars), log in, and verify against
-     the API. Username is cached in .env; password is not persisted.
+  2. Prompt for TrainingPeaks username + password (or read TP_USERNAME
+     from the env), log in, and verify against the API. Username is
+     cached in .env; the password is used once and discarded.
   3. Write .env in the workspace.
   4. Run an initial pull (unless --no-pull).
 `);
@@ -143,22 +143,16 @@ export async function run(argv: string[]): Promise<void> {
     log.info(`Using username: ${username}`);
   }
 
-  // Password: TP_PASSWORD env > prompt.
-  const envPassword = (process.env.TP_PASSWORD ?? "").trim();
-
+  // Password: prompted (never read from env, never persisted).
   let cookie = "";
   let athleteId = 0;
   let timezone = "";
   let attempt = 0;
   while (attempt < MAX_LOGIN_ATTEMPTS) {
     attempt++;
-    const password = envPassword || (await askSecret("Password"));
+    const password = await askSecret("Password");
     if (!password) {
       console.error("  Empty password. Try again.\n");
-      if (envPassword) {
-        // env var is set but empty — bail rather than infinite-loop.
-        process.exit(64);
-      }
       continue;
     }
 
@@ -179,11 +173,11 @@ export async function run(argv: string[]): Promise<void> {
     } catch (err) {
       if (err instanceof LoginError || err instanceof AuthError) {
         const remaining = MAX_LOGIN_ATTEMPTS - attempt;
-        if (remaining > 0 && !envPassword) {
+        if (remaining > 0) {
           console.error(`  ${err.message} ${remaining} attempt(s) remaining.\n`);
           continue;
         }
-        console.error(`\nLogin failed${envPassword ? "" : ` after ${MAX_LOGIN_ATTEMPTS} attempts`}: ${err.message}\n`);
+        console.error(`\nLogin failed after ${MAX_LOGIN_ATTEMPTS} attempts: ${err.message}\n`);
         process.exit(2);
       }
       throw err;
@@ -213,7 +207,6 @@ export async function run(argv: string[]): Promise<void> {
   const env = buildEnvConfig({
     cookie,
     username,
-    password: envPassword || undefined,
     projectRoot: targetDir,
   });
   await runWithConfig(env, { weeks, dryRun: false, athleteIdOverride: undefined });
@@ -236,11 +229,11 @@ async function stampInitialComments(envFile: string, athleteId: number): Promise
   if (/^#/m.test(text)) return;
   const preamble =
     `# TrainingPeaks credentials.\n` +
-    `# TP_COOKIE is auto-managed: refreshed automatically when expired,\n` +
-    `# using TP_USERNAME (cached here) and your password (prompted, or read\n` +
-    `# from the TP_PASSWORD env var). To rotate manually run \`tp authenticate\`.\n` +
+    `# TP_COOKIE is the session cookie obtained at login. When it expires\n` +
+    `# (typically a few weeks), run \`tp authenticate\` to get a fresh one;\n` +
+    `# you'll be prompted for your password. The password is never stored.\n` +
     `#\n` +
-    `# This file may contain a session cookie; treat it as a secret.\n` +
+    `# This file contains a session cookie; treat it as a secret.\n` +
     `# Recommended: chmod 600 .env (POSIX).\n` +
     `#\n` +
     `# Optional: override the athlete id (coach accounts).\n` +
