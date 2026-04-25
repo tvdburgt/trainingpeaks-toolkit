@@ -1,0 +1,29 @@
+{
+  "name": "trainingpeaks-toolkit",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "TrainingPeaks toolkit — sync workouts and events to weekly markdown, and plan ahead",
+  "bin": {
+    "tp": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/cli.ts",
+    "start": "node dist/cli.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.4",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2"
+  }
+}
