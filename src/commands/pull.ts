@@ -3,6 +3,7 @@ import path from "node:path";
 import {
   loadEnvFromProcess,
   resolveAthleteOverride,
+  TP_DIR,
   type EnvConfig,
 } from "../config.js";
 import { log, setVerbose } from "../util/log.js";
@@ -121,7 +122,7 @@ export async function runWithConfig(env: EnvConfig, opts: PullOptions): Promise<
   const profile = await readAthleteProfile(env.outDir);
   if (profile) warnIfStale(profile);
 
-  // Auto-synced TP profile mirror (`_generated/athlete.tp.md`). Regenerated every pull.
+  // Auto-synced TP profile mirror (`.tp/athlete.tp.md`). Regenerated every pull.
   if (!dryRun) {
     log.info("Syncing athlete settings from TrainingPeaks...");
     const [settings, latestWeight] = await Promise.all([
@@ -172,7 +173,7 @@ export async function runWithConfig(env: EnvConfig, opts: PullOptions): Promise<
   log.info(`Fetched ${rawWorkouts.length} workouts`);
 
   // Events span past + future: same lower bound as workouts, but extend 12 months
-  // ahead so upcoming races appear in `_generated/events.md` and `_generated/index.md`.
+  // ahead so upcoming races appear in `.tp/events.md` and `.tp/index.md`.
   const eventsRange = {
     from: range.from,
     to: addMonthsUtc(new Date(), 12),
@@ -261,9 +262,9 @@ export async function runWithConfig(env: EnvConfig, opts: PullOptions): Promise<
 
   log.info(`Done. ${written} week file(s) ${dryRun ? "would be written" : "written"}.`);
 
-  // Emit machine-readable datasets + synced meta files under <workspace>/_generated/.
+  // Emit machine-readable datasets + synced meta files under <workspace>/.tp/.
   if (!dryRun) {
-    const generatedDir = path.join(env.outDir, "_generated");
+    const generatedDir = path.join(env.outDir, TP_DIR);
 
     const { workoutsFile, lapsWritten, structureWritten } = await emitWorkoutsJsonl(
       [...weekMap.values()].flatMap((b) => b.workouts),

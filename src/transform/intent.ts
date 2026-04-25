@@ -1,7 +1,7 @@
 import type { Workout, StructureStep } from "./workout.js";
 
 /**
- * Controlled vocabulary for workout intent. See `_generated/schema.md` for definitions.
+ * Controlled vocabulary for workout intent. See `.tp/schema.md` for definitions.
  * Ordered roughly by specificity — more specific tags take precedence in
  * classification rules.
  */

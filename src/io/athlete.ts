@@ -19,7 +19,7 @@ export interface AthleteProfile {
 const TEMPLATE = `---
 # Hand-edited athlete profile. Never overwritten by \`tp pull\`.
 # Physiology (FTP, LTHR, max HR, weight, zones) is auto-synced into
-# \`_generated/athlete.tp.md\` from TrainingPeaks. Keep _that_ file as source of truth.
+# \`.tp/athlete.tp.md\` from TrainingPeaks. Keep _that_ file as source of truth.
 # Use this file for things TrainingPeaks doesn't know:
 #   - what training block you're in and when it started
 #   - hand-curated A-races / goals not yet entered in TP
@@ -38,7 +38,7 @@ goals: []
 Hand-edited notes about your current block, A-races, constraints, and anything
 else an LLM should know before suggesting plan changes. Free-form below.
 
-> Physiology values (FTP, LTHR, zones, weight) live in \`_generated/athlete.tp.md\` —
+> Physiology values (FTP, LTHR, zones, weight) live in \`.tp/athlete.tp.md\` —
 > regenerated each \`tp pull\` from TrainingPeaks. Edit them in TP, not here.
 `;
 
@@ -86,7 +86,7 @@ export async function readAthleteProfile(outDir: string): Promise<AthleteProfile
   return prof;
 }
 
-/** Warn if phase_start is >90 days old. Physiology lives in `_generated/athlete.tp.md`. */
+/** Warn if phase_start is >90 days old. Physiology lives in `.tp/athlete.tp.md`. */
 export function warnIfStale(p: AthleteProfile, today = new Date()): void {
   if (p.phase_start) {
     const d = new Date(p.phase_start);

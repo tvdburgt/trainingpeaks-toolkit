@@ -1,10 +1,11 @@
 /**
- * Renders `_generated/events.md` — auto-synced TrainingPeaks events/races for a window.
+ * Renders `.tp/events.md` — auto-synced TrainingPeaks events/races for a window.
  *
- * Companion to `_generated/athlete.tp.md`. Regenerated every `tp pull`. Hand-edits lost.
+ * Companion to `.tp/athlete.tp.md`. Regenerated every `tp pull`. Hand-edits lost.
  */
 import path from "node:path";
 import { writeAtomic } from "./fs.js";
+import { TP_DIR } from "../config.js";
 import type { Event } from "../transform/workout.js";
 
 export interface EventsFileInput {
@@ -131,7 +132,7 @@ function blockquote(text: string): string {
 }
 
 export async function writeEventsFile(outDir: string, input: EventsFileInput): Promise<string> {
-  const p = path.join(outDir, "_generated", "events.md");
+  const p = path.join(outDir, TP_DIR, "events.md");
   await writeAtomic(p, renderEventsMarkdown(input));
   return p;
 }

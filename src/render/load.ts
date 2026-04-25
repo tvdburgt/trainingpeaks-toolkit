@@ -40,7 +40,7 @@ export function pmcPointToRecord(p: TPPerformanceDataPoint): LoadRecord {
 }
 
 /**
- * Emit load.jsonl to <workspace>/_generated/. Full rewrite per run.
+ * Emit load.jsonl to <workspace>/.tp/. Full rewrite per run.
  * One line per calendar day in the requested PMC window.
  */
 export async function emitLoadJsonl(

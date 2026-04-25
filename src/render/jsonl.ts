@@ -8,7 +8,7 @@ export interface JsonlContext {
   athleteId: number;
   timezone: string;
   generatedAt: Date;
-  generatedDir: string; // absolute path to <workspace>/_generated
+  generatedDir: string; // absolute path to <workspace>/.tp
 }
 
 /**
@@ -162,7 +162,7 @@ function ratio(
 }
 
 /**
- * Emit workouts.jsonl + sidecar laps/structure files under <workspace>/_generated/.
+ * Emit workouts.jsonl + sidecar laps/structure files under <workspace>/.tp/.
  * Full rewrite of workouts.jsonl every run.
  */
 export async function emitWorkoutsJsonl(

@@ -1,5 +1,12 @@
 import "dotenv/config";
 
+/**
+ * Name of the tool-managed directory inside a workspace. Holds everything
+ * `tp` writes that isn't a hand-edited week file or `ATHLETE.md`. Convention
+ * mirrors `.git/`, `.vscode/` — leading dot signals "tool state, don't touch."
+ */
+export const TP_DIR = ".tp";
+
 export interface EnvConfig {
   cookie: string;
   /** Optional cached username for re-authentication. */

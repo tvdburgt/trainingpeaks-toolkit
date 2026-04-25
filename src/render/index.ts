@@ -3,6 +3,7 @@ import type { LoadRecord } from "./load.js";
 import type { AthleteProfile } from "../io/athlete.js";
 import type { Event } from "../transform/workout.js";
 import { writeAtomic } from "../io/fs.js";
+import { TP_DIR } from "../config.js";
 
 export interface IndexContext {
   athleteId: number;
@@ -20,7 +21,7 @@ export interface IndexContext {
  * anchor — keep it under ~2 KB.
  */
 export async function writeIndex(ctx: IndexContext): Promise<string> {
-  const p = path.join(ctx.outDir, "_generated", "index.md");
+  const p = path.join(ctx.outDir, TP_DIR, "index.md");
   const today = dateInTz(ctx.generatedAt, ctx.timezone);
 
   const recent = ctx.load.filter((r) => r.date <= today).slice(-84); // ~12 weeks
@@ -47,7 +48,7 @@ export async function writeIndex(ctx: IndexContext): Promise<string> {
     parts.push("");
   }
 
-  // Profile block: training block / phase only. Physiology is in `_generated/athlete.tp.md`.
+  // Profile block: training block / phase only. Physiology is in `.tp/athlete.tp.md`.
   if (ctx.profile?.current_block) {
     parts.push("## Block");
     parts.push("");

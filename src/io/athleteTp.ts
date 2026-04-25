@@ -1,5 +1,5 @@
 /**
- * Renders `_generated/athlete.tp.md` — a fully-generated mirror of athlete settings
+ * Renders `.tp/athlete.tp.md` — a fully-generated mirror of athlete settings
  * pulled from TrainingPeaks. Companion to the user-edited `ATHLETE.md` at the
  * workspace root.
  *
@@ -7,6 +7,7 @@
  */
 import path from "node:path";
 import { writeAtomic } from "./fs.js";
+import { TP_DIR } from "../config.js";
 import type { TPAthleteSettings, TPZoneGroup, TPZoneBand } from "../api/types.js";
 import type { LatestWeight } from "../api/athlete.js";
 
@@ -169,7 +170,7 @@ export function renderAthleteTpMarkdown(input: AthleteTpInput): string {
 }
 
 export async function writeAthleteTpFile(outDir: string, input: AthleteTpInput): Promise<string> {
-  const p = path.join(outDir, "_generated", "athlete.tp.md");
+  const p = path.join(outDir, TP_DIR, "athlete.tp.md");
   const md = renderAthleteTpMarkdown(input);
   await writeAtomic(p, md);
   return p;

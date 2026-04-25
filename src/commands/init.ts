@@ -1,7 +1,7 @@
 import { parseArgs } from "node:util";
 import path from "node:path";
 import fs from "node:fs/promises";
-import { buildEnvConfig } from "../config.js";
+import { buildEnvConfig, TP_DIR } from "../config.js";
 import { log, setVerbose } from "../util/log.js";
 import { ask, askSecret, confirm } from "../util/prompt.js";
 import { ensureDir, exists, readIfExists } from "../io/fs.js";
@@ -85,7 +85,7 @@ export async function run(argv: string[]): Promise<void> {
 
   if (dirExists) {
     // Refuse if this looks like an existing workspace.
-    const generatedDir = path.join(targetDir, "_generated");
+    const generatedDir = path.join(targetDir, TP_DIR);
     const athleteFile = path.join(targetDir, "ATHLETE.md");
     if ((await exists(generatedDir)) || (await exists(athleteFile))) {
       console.error(

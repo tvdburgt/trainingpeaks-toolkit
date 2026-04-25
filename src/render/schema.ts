@@ -1,5 +1,6 @@
 import path from "node:path";
 import { writeAtomic, exists } from "../io/fs.js";
+import { TP_DIR } from "../config.js";
 import { log } from "../util/log.js";
 
 const SCHEMA_CONTENT = `# Schema & glossary
@@ -13,7 +14,7 @@ this file once to understand field meanings before reading week files.
 <workspace>/
   .env                       TP_USERNAME, TP_COOKIE (gitignore'd by you)
   ATHLETE.md                 hand-edited: current_block, phase_start, goals[], notes. Never overwritten.
-  _generated/                machine-readable + auto-synced files; full rewrite per run
+  .tp/                       machine-readable + auto-synced files; full rewrite per run
     athlete.tp.md            auto-synced from TrainingPeaks: FTP, LTHR, max HR, weight, zones
     events.md                auto-synced from TrainingPeaks: upcoming + past events/races
     schema.md                this file
@@ -22,11 +23,11 @@ this file once to understand field meanings before reading week files.
     load.jsonl               one JSON object per calendar day (PMC series)
     laps/<id>.json           per-workout lap array (sidecar, referenced by workouts.jsonl)
     structure/<id>.json      per-workout planned-interval tree (sidecar)
-  YYYY/NN.md                 one file per ISO week (narrative surface; workouts only — events live in _generated/events.md)
+  YYYY/NN.md                 one file per ISO week (narrative surface; workouts only — events live in .tp/events.md)
 \`\`\`
 
 The on-disk files are themselves the sync cache. \`tp pull\` re-pulls the
-current ISO week and any missing older weeks; everything under \`_generated/\`
+current ISO week and any missing older weeks; everything under \`.tp/\`
 is fully rewritten every run. There is no separate state file.
 
 ## Units
@@ -125,7 +126,7 @@ source: trainingpeaks
 ## Structured-workout targets
 
 When a planned workout has a step structure (visible in week files under
-\`**Planned structure**\` and in \`_generated/structure/<id>.json\`), each step
+\`**Planned structure**\` and in \`.tp/structure/<id>.json\`), each step
 records an intensity range with a unit. The unit is normalised to one of:
 
 | \`intensityUnit\` | Meaning | Rendered as |
@@ -207,7 +208,7 @@ common (overcooking or late-added effort).
 `;
 
 export async function ensureSchemaFile(outDir: string): Promise<string> {
-  const p = path.join(outDir, "_generated", "schema.md");
+  const p = path.join(outDir, TP_DIR, "schema.md");
   if (!(await exists(p))) {
     await writeAtomic(p, SCHEMA_CONTENT);
     log.info(`Created ${path.relative(outDir, p)}`);
@@ -217,7 +218,7 @@ export async function ensureSchemaFile(outDir: string): Promise<string> {
 
 /** Force-rewrite the schema file. Use when upgrading the toolkit. */
 export async function writeSchemaFile(outDir: string): Promise<string> {
-  const p = path.join(outDir, "_generated", "schema.md");
+  const p = path.join(outDir, TP_DIR, "schema.md");
   await writeAtomic(p, SCHEMA_CONTENT);
   return p;
 }

@@ -30,9 +30,9 @@ A workspace contains:
 - **`.env`** — credentials for this athlete (`TP_USERNAME`, `TP_COOKIE`, optional `TP_ATHLETE_ID`). Created by `tp init`. Treat as secret.
 - **`ATHLETE.md`** — the only hand-edited file. Holds your current training block, A-races, and any free-form notes you want an LLM to see. Never overwritten by `tp pull`.
 - **Year directories `2024/`, `2025/`, …** — one markdown file per ISO week (`<isoYear>/<NN>.md`). Generated.
-- **`_generated/`** — everything else `tp` writes: synced TP profile mirror (`athlete.tp.md`), race calendar (`events.md`), dashboard (`index.md`), schema/glossary for LLMs (`schema.md`), and machine-readable datasets (`workouts.jsonl`, `load.jsonl`, `laps/`, `structure/`). Full rewrite per run; do not hand-edit.
+- **`.tp/`** — everything else `tp` writes: synced TP profile mirror (`athlete.tp.md`), race calendar (`events.md`), dashboard (`index.md`), schema/glossary for LLMs (`schema.md`), and machine-readable datasets (`workouts.jsonl`, `load.jsonl`, `laps/`, `structure/`). Full rewrite per run; do not hand-edit.
 
-The on-disk files are themselves the sync cache — `tp pull` re-pulls the current ISO week and any missing older weeks, and rewrites `_generated/` from scratch each run. There is no separate state file.
+The on-disk files are themselves the sync cache — `tp pull` re-pulls the current ISO week and any missing older weeks, and rewrites `.tp/` from scratch each run. There is no separate state file.
 
 Create one with:
 
@@ -132,7 +132,7 @@ After `tp init` + `tp pull`, the workspace looks like:
 my-workspace/
   .env                 credentials (gitignore!)
   ATHLETE.md           hand-edited: current_block, goals, notes
-  _generated/
+  .tp/
     athlete.tp.md      synced from TP: FTP, LTHR, zones, weight
     events.md          synced: race calendar
     index.md           generated: dashboard
